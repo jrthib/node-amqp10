@@ -39,7 +39,9 @@ describe('QPID', function() {
           if (count === expected.length) done();
         });
 
-        return Promise.mapSeries(expected, function(v) { return sender.send(v); });
+        return Promise.mapSeries(expected, function(v) {
+          return sender.send(v, { noReply: true });
+        });
       });
     });
 
@@ -61,7 +63,7 @@ describe('QPID', function() {
 
       Promise.all([
         test.client.createReceiver(config.defaultLink),
-        test.client.createSenderStream(config.defaultLink)
+        test.client.createSenderStream(config.defaultLink, { noReply: true })
       ])
       .spread(function(receiver, stream) {
         var count = 0;
@@ -111,7 +113,7 @@ describe('QPID', function() {
       Promise.all([
         test.client.createReceiver(config.defaultLink),
         test.client.createReceiverStream('test.streams.queue'),
-        test.client.createSenderStream(config.defaultLink),
+        test.client.createSenderStream(config.defaultLink, { noReply: true }),
       ])
       .spread(function(receiver, receiverStream, senderStream) {
         var count = 0;
@@ -125,7 +127,9 @@ describe('QPID', function() {
         return test.client.createSender('test.streams.queue');
       })
       .then(function(sender) {
-        return Promise.mapSeries(expected, function(v) { return sender.send(v); });
+        return Promise.mapSeries(expected, function(v) {
+          return sender.send(v, { noReply: true });
+        });
       });
     });
   }); // Both
